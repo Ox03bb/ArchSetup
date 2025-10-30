@@ -58,6 +58,63 @@ install_packages() {
     echo -e "${GREEN}All packages installed.${RESET}"
 }
 
+setup_aliases() {
+    banner "Configuring Git and terminal aliases"
+
+    # -----------------------
+    # Git aliases
+    # -----------------------
+    git config --global alias.st status
+    git config --global alias.chk checkout
+    git config --global alias.br branch
+    git config --global alias.cm "commit -m"
+    git config --global alias.last "log -1 HEAD"
+    git config --global alias.lg "log --oneline --graph --decorate --all"
+
+    echo -e "${GREEN}Git aliases configured.${RESET}"
+
+    # -----------------------
+    # Terminal aliases
+    # -----------------------
+    ZSHRC="$HOME/.zshrc"
+
+    # Define aliases
+    TERMINAL_ALIASES=$(cat <<'EOF'
+
+# ===== Custom Aliases =====
+alias dcd="docker compose down"
+alias dcu="docker compose up -d"
+alias dcl="docker compose logs -f"
+alias dcb="docker compose build"
+alias dps="docker ps"
+alias di="docker images"
+alias drm="docker rm"
+
+alias ls="lsd"
+alias pygenv="source /home/ox03bb/.genv/bin/activate"
+
+alias mk="minikube"
+alias kc="kubectl"
+
+alias json="jq ."
+alias please="sudo"
+alias c="clear"
+
+alias py="python3"
+
+# ==========================
+EOF
+)
+
+    # Append if not already present
+    if ! grep -q "Custom Aliases" "$ZSHRC"; then
+        echo "$TERMINAL_ALIASES" >> "$ZSHRC"
+        echo -e "${GREEN}Terminal aliases added to .zshrc.${RESET}"
+    else
+        echo -e "${YELLOW}Terminal aliases already present in .zshrc.${RESET}"
+    fi
+}
+
 install_ohmyzsh() {
     banner "Installing Oh My Zsh"
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -110,6 +167,7 @@ main() {
     install_ohmyzsh
     set_default_shell
     install_zsh_plugins
+	setup_aliases
     final_message
 }
 
